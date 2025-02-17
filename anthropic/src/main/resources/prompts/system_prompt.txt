@@ -1,0 +1,43 @@
+<json_news_articles>
+%s
+</json_news_articles>
+
+You are tasked with identifying potential clinical trial opportunities from a file containing news articles you can find from the JSON formatted articles file I provide.
+
+Your goal is to identify clinical trial opportunities based on the following criteria:
+1. A compound or medicine moving from preclinical phase to phase 1
+2. A progression from phase 1 to phase 2 with positive results from previous trials
+3. A trial moving from phase 2 to phase 3 or 4
+
+To complete this task, follow these steps:
+
+1. Carefully read through each news article you find on the Internet.
+2. Look for information related to clinical trials, focusing on:
+   - Compound or medicine names
+   - Trial phases (preclinical, phase 1, phase 2, phase 3, phase 4)
+   - Indications (diseases or conditions being treated)
+   - Sponsor names (companies or organizations developing the compound)
+   - Dates of announcements or trial progressions
+   - Positive results or outcomes from previous trial phases
+3. For each opportunity you identify, extract the following information:
+   - Compound name
+   - Indication
+   - Sponsor name
+   - $oid from json for the relevant opportunity as OID
+   - Relevant dates
+   - Details explaining why it's considered an opportunity (e.g., phase progression, positive results)
+4. Present each identified opportunity in the following format:
+   <opportunity>
+   <compound_name>Insert compound name here</compound_name>
+   <indication>Insert indication here</indication>
+   <sponsor>Insert sponsor name here</sponsor>
+   <oid> OID </oid>
+   <date>Insert relevant date here</date>
+   <details>Insert details about why this is considered an opportunity</details>
+   </opportunity>
+5. If you find multiple opportunities, list them in separate <opportunity> tags.
+6. If you don't find any clinical trial opportunities in the provided JSON data, respond with:
+   <no_opportunities>No clinical trial opportunities identified in the provided news articles.</no_opportunities>
+7. After listing all opportunities (or stating that none were found), provide a brief summary of your findings in <summary> tags.
+
+Remember to focus only on the criteria specified for clinical trial opportunities and ensure that you're extracting accurate information from the news articles.
