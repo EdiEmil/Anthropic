@@ -1,9 +1,11 @@
 package com.anthropic.anthropic.controller;
 
+import com.anthropic.anthropic.service.WebHookService;
 import com.anthropic.client.AnthropicClient;
 import com.anthropic.client.okhttp.AnthropicOkHttpClient;
 import com.anthropic.models.MessageCreateParams;
 import com.anthropic.models.Model;
+import com.anthropic.models.TextBlock;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -26,16 +28,23 @@ public class AnthropicController {
 
     private final AnthropicClient client;
     private final ResourceLoader resourceLoader;
+    private final WebHookService webhookService;
 
-    public AnthropicController(@Value("${anthropic.api.key}") String apiKey, ResourceLoader resourceLoader) {
+    //You can change the webhook url in application.properties
+    @Value("${webhook.url}") String webhookUrl;
+
+    public AnthropicController(@Value("${anthropic.api.key}") String apiKey, ResourceLoader resourceLoader, WebHookService webhookService) {
         this.client = AnthropicOkHttpClient.builder()
                 .apiKey(apiKey).build();
         this.resourceLoader = resourceLoader;
+        this.webhookService = webhookService;
     }
 
     private String loadSystemPrompt() throws IOException {
         try{
             Resource resource = resourceLoader.getResource("file:/app/prompts/system_prompt.txt");
+            //for running locally uncomment the line bellow and comment the line above
+           // Resource resource = resourceLoader.getResource("classpath:/prompts/system_prompt.txt");
             return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load system prompt: " + e.getMessage(), e);
@@ -62,9 +71,10 @@ public class AnthropicController {
 
         List<String> response = client.messages().create(createParams).content().stream()
                 .flatMap(contentBlock -> contentBlock.text().stream())
-                .map(textBlock -> textBlock.text())
+                .map(TextBlock::text)
                 .collect(Collectors.toList());
 
+            webhookService.sendWebhook(webhookUrl,response);
         return ResponseEntity.ok(response);
     }catch (RuntimeException | IOException e){
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
