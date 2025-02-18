@@ -35,10 +35,10 @@ public class AnthropicController {
 
     private String loadSystemPrompt() throws IOException {
         try{
-            Resource resource = resourceLoader.getResource("classpath:prompts/system_prompt.txt");
-            return Files.readString(resource.getFile().toPath(), StandardCharsets.UTF_8);
+            Resource resource = resourceLoader.getResource("file:/app/prompts/system_prompt.txt");
+            return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load system prompt: " + e.getMessage());
+            throw new RuntimeException("Failed to load system prompt: " + e.getMessage(), e);
         }
     }
 
